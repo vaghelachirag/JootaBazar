@@ -1,16 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jootabazar/model/product_model.dart';
 import 'package:jootabazar/screen/home/provider/product_riverpood.dart';
+import 'package:jootabazar/screen/cart/provider/cart_provider.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final Product product;
 
-  const ProductDetailScreen({
-    super.key,
-    required this.product,
-  });
+  const ProductDetailScreen({super.key, required this.product});
 
   @override
   ConsumerState<ProductDetailScreen> createState() =>
@@ -21,14 +20,24 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   int _selectedImageIndex = 0;
   bool _isFavorite = false;
   String _selectedSize = '8';
-  bool _isInStock = true; // Stock status
+  final bool _isInStock = true; // Stock status
+  bool _is360View = false; // Toggle for 360-degree view
 
   // Generate multiple image URLs for the product (using the same image for demo)
   List<String> get _productImages => [
-        widget.product.imageUrl,
-        widget.product.imageUrl,
-        widget.product.imageUrl,
-      ];
+    widget.product.imageUrl,
+    widget.product.imageUrl,
+    widget.product.imageUrl,
+  ];
+
+  List<String> get _product360Images {
+    return [
+      'https://i.ibb.co/vCYScBxX/Whats-App-Image-2025-11-28-at-8-53-50-AM-1-removebg-preview.png',
+      'https://i.ibb.co/mVWYfHmM/Whats-App-Image-2025-11-28-at-8-53-50-AM-2-removebg-preview.png',
+      'https://i.ibb.co/mVWYfHmM/Whats-App-Image-2025-11-28-at-8-53-50-AM-2-removebg-preview.png',
+      'https://i.ibb.co/vCYScBxX/Whats-App-Image-2025-11-28-at-8-53-50-AM-1-removebg-preview.png',
+    ];
+  }
 
   void _openFullScreenImage(int initialIndex) {
     Navigator.push(
@@ -47,13 +56,16 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   Widget build(BuildContext context) {
     final products = ref.watch(productsProvider);
     final originalPrice = (widget.product.price * 1.8).round();
-    final discountPercent =
-        ((1 - (widget.product.price / originalPrice)) * 100).round();
+    final discountPercent = ((1 - (widget.product.price / originalPrice)) * 100)
+        .round();
 
     // Get similar products (same category, excluding current product)
     final similarProducts = products
-        .where((p) =>
-            p.category == widget.product.category && p.id != widget.product.id)
+        .where(
+          (p) =>
+              p.category == widget.product.category &&
+              p.id != widget.product.id,
+        )
         .toList();
 
     // If no similar products in same category, get other products
@@ -63,13 +75,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.grey[50]!, Colors.white],
-          ),
-        ),
+        color: Colors.white,
         child: SafeArea(
           child: CustomScrollView(
             slivers: [
@@ -82,17 +88,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 elevation: 0,
                 leading: Container(
                   margin: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
                   child: IconButton(
                     icon: const Icon(Icons.arrow_back, color: Colors.black),
                     onPressed: () => Navigator.pop(context),
@@ -129,46 +124,160 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               SliverToBoxAdapter(
                 child: Container(
                   height: 400,
-                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
                   child: Column(
                     children: [
-                      // Main Image
-                      Expanded(
-                        child: PageView.builder(
-                          itemCount: _productImages.length,
-                          onPageChanged: (index) {
-                            setState(() => _selectedImageIndex = index);
-                          },
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () => _openFullScreenImage(index),
-                              child: _ZoomableImage(
-                                imageUrl: _productImages[index],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      // Image Indicators
+                      // Toggle Button for 360-degree view
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(
-                          _productImages.length,
-                          (index) => AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            height: 8,
-                            width: _selectedImageIndex == index ? 24 : 8,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
                             decoration: BoxDecoration(
-                              color: _selectedImageIndex == index
-                                  ? Colors.black
-                                  : Colors.grey[300],
-                              borderRadius: BorderRadius.circular(12),
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  setState(() => _is360View = !_is360View);
+                                },
+                                borderRadius: BorderRadius.circular(20),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        _is360View
+                                            ? Icons.vaccines
+                                            : Icons.vaccines,
+                                        color: _is360View
+                                            ? Colors.blue[700]
+                                            : Colors.grey[700],
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        _is360View
+                                            ? '360° View'
+                                            : 'Normal View',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: _is360View
+                                              ? Colors.blue[700]
+                                              : Colors.grey[700],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
+                      const SizedBox(height: 12),
+                      // Main Image or 360-degree Viewer
+                      Expanded(
+                        child: _is360View
+                            ? _Product360Viewer(
+                                images: _product360Images,
+                                onTap: () {
+                                  // Open 360 view in full screen
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          _FullScreen360Viewer(
+                                            images: _product360Images,
+                                          ),
+                                      fullscreenDialog: true,
+                                    ),
+                                  );
+                                },
+                              )
+                            : PageView.builder(
+                                itemCount: _productImages.length,
+                                onPageChanged: (index) {
+                                  setState(() => _selectedImageIndex = index);
+                                },
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () => _openFullScreenImage(index),
+                                    child: _ZoomableImage(
+                                      imageUrl: _productImages[index],
+                                    ),
+                                  );
+                                },
+                              ),
+                      ),
+                      const SizedBox(height: 12),
+                      // Image Indicators (only show in normal view)
+                      if (!_is360View)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(
+                            _productImages.length,
+                            (index) => AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              margin: const EdgeInsets.symmetric(horizontal: 4),
+                              height: 8,
+                              width: _selectedImageIndex == index ? 24 : 8,
+                              decoration: BoxDecoration(
+                                color: _selectedImageIndex == index
+                                    ? Colors.black
+                                    : Colors.grey[300],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        )
+                      else
+                        // 360-degree view indicator
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.blue[50],
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.rotate_right,
+                                size: 16,
+                                color: Colors.blue[700],
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Swipe or drag to rotate',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.blue[700],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -184,61 +293,21 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       // Product Name
                       Text(
                         widget.product.name,
-                        style: const TextStyle(
-                          fontSize: 28,
+                        style: TextStyle(
+                          fontSize: 15.sp,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
                           height: 1.2,
                         ),
                       ),
-                      const SizedBox(height: 16),
-
+                      SizedBox(height: 10.sp),
                       // Stock Status
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _isInStock ? Colors.green[50] : Colors.red[50],
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: _isInStock
-                                ? Colors.green[300]!
-                                : Colors.red[300]!,
-                            width: 1,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              _isInStock ? Icons.check_circle : Icons.cancel,
-                              color: _isInStock ? Colors.green[700] : Colors.red[700],
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              _isInStock ? 'In Stock' : 'Out of Stock',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: _isInStock
-                                    ? Colors.green[700]
-                                    : Colors.red[700],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Price Section
                       Row(
                         children: [
                           Text(
                             '₹${widget.product.price.toStringAsFixed(0)}',
-                            style: const TextStyle(
-                              fontSize: 32,
+                            style: TextStyle(
+                              fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
                             ),
@@ -247,7 +316,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           Text(
                             '₹$originalPrice',
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 14.sp,
                               decoration: TextDecoration.lineThrough,
                               color: Colors.grey[500],
                             ),
@@ -267,19 +336,18 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                               style: TextStyle(
                                 color: Colors.red[700],
                                 fontWeight: FontWeight.bold,
-                                fontSize: 14,
+                                fontSize: 14.sp,
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
-
+                      SizedBox(height: 12.sp),
                       // Size Selection
-                      const Text(
+                      Text(
                         'Select Size',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 12.sp,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
                         ),
@@ -311,7 +379,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                               child: Text(
                                 size,
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 14.sp,
                                   fontWeight: FontWeight.bold,
                                   color: isSelected
                                       ? Colors.white
@@ -322,11 +390,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           );
                         }).toList(),
                       ),
-                      const SizedBox(height: 24),
-
+                      SizedBox(height: 10.sp),
                       // Delivery Information
                       Container(
-                        padding: const EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
@@ -349,17 +416,17 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                   size: 24,
                                 ),
                                 const SizedBox(width: 12),
-                                const Text(
+                                Text(
                                   'Delivery Information',
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 14.sp,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black87,
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 16),
+                            SizedBox(height: 12.sp),
                             _buildDeliveryRow(
                               'Standard Delivery',
                               '3-5 business days',
@@ -386,15 +453,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       const SizedBox(height: 24),
 
                       // Product Details
-                      const Text(
+                      Text(
                         'Product Details',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 12.sp,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 15.sp),
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
@@ -411,7 +478,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildDetailRow('Category', widget.product.category),
+                            _buildDetailRow(
+                              'Category',
+                              widget.product.category,
+                            ),
                             const Divider(height: 24),
                             _buildDetailRow('Material', 'Premium Leather'),
                             const Divider(height: 24),
@@ -426,14 +496,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      SizedBox(height: 15.sp),
 
                       // Similar Products Section
                       if (displaySimilarProducts.isNotEmpty) ...[
-                        const Text(
+                        Text(
                           'Similar Products',
                           style: TextStyle(
-                            fontSize: 22,
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
                           ),
@@ -492,11 +562,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 child: ElevatedButton(
                   onPressed: _isInStock
                       ? () {
-                          // Add to cart functionality
+                          ref.read(cartProvider.notifier).addToCart(
+                                widget.product,
+                                size: _selectedSize,
+                              );
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Added to cart!'),
                               duration: Duration(seconds: 2),
+                              backgroundColor: Colors.black,
                             ),
                           );
                         }
@@ -565,7 +639,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           child: Text(
             label,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 12.sp,
               fontWeight: FontWeight.w600,
               color: Colors.grey[700],
             ),
@@ -574,10 +648,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.black87,
-            ),
+            style: TextStyle(fontSize: 12.sp, color: Colors.black87),
           ),
         ),
       ],
@@ -607,8 +678,8 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 15,
+                style: TextStyle(
+                  fontSize: 12.sp,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
                 ),
@@ -616,10 +687,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               const SizedBox(height: 4),
               Text(
                 description,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
               ),
             ],
           ),
@@ -627,7 +695,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         Text(
           price,
           style: TextStyle(
-            fontSize: 15,
+            fontSize: 12.sp,
             fontWeight: FontWeight.bold,
             color: price == 'Free' ? Colors.green[700] : Colors.black87,
           ),
@@ -648,14 +716,13 @@ class _FullScreenImageViewer extends StatefulWidget {
   });
 
   @override
-  State<_FullScreenImageViewer> createState() =>
-      _FullScreenImageViewerState();
+  State<_FullScreenImageViewer> createState() => _FullScreenImageViewerState();
 }
 
 class _FullScreenImageViewerState extends State<_FullScreenImageViewer> {
   late PageController _pageController;
   late int _currentIndex;
-  TransformationController _transformationController =
+  final TransformationController _transformationController =
       TransformationController();
 
   @override
@@ -690,7 +757,11 @@ class _FullScreenImageViewerState extends State<_FullScreenImageViewer> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                    icon: const Icon(
+                      Icons.close,
+                      color: Colors.white,
+                      size: 28,
+                    ),
                     onPressed: () => Navigator.pop(context),
                   ),
                   Text(
@@ -702,8 +773,11 @@ class _FullScreenImageViewerState extends State<_FullScreenImageViewer> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.zoom_out_map,
-                        color: Colors.white, size: 28),
+                    icon: const Icon(
+                      Icons.zoom_out_map,
+                      color: Colors.white,
+                      size: 28,
+                    ),
                     onPressed: _resetZoom,
                   ),
                 ],
@@ -834,17 +908,6 @@ class _ZoomableImageState extends State<_ZoomableImage> {
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
         margin: const EdgeInsets.symmetric(horizontal: 4),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 15,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(24),
           child: AnimatedScale(
@@ -929,10 +992,7 @@ class _SimilarProductCard extends StatelessWidget {
   final Product product;
   final VoidCallback onTap;
 
-  const _SimilarProductCard({
-    required this.product,
-    required this.onTap,
-  });
+  const _SimilarProductCard({required this.product, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -959,9 +1019,7 @@ class _SimilarProductCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Product Image
-            Expanded(
-              child: _SimilarProductImage(imageUrl: product.imageUrl),
-            ),
+            Expanded(child: _SimilarProductImage(imageUrl: product.imageUrl)),
 
             // Product Info
             Padding(
@@ -1011,3 +1069,335 @@ class _SimilarProductCard extends StatelessWidget {
   }
 }
 
+// 360-Degree Product Viewer
+class _Product360Viewer extends StatefulWidget {
+  final List<String> images;
+  final VoidCallback onTap;
+
+  const _Product360Viewer({required this.images, required this.onTap});
+
+  @override
+  State<_Product360Viewer> createState() => _Product360ViewerState();
+}
+
+class _Product360ViewerState extends State<_Product360Viewer> {
+  late PageController _pageController;
+  double _dragStartX = 0;
+  int _currentFrame = 0;
+  bool _isDragging = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: 0);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _onPanStart(DragStartDetails details) {
+    _dragStartX = details.globalPosition.dx;
+    _isDragging = true;
+  }
+
+  void _onPanUpdate(DragUpdateDetails details) {
+    if (!_isDragging) return;
+
+    final deltaX = details.globalPosition.dx - _dragStartX;
+    final sensitivity = 0.5; // Adjust sensitivity for rotation speed
+    final frameDelta = (deltaX * sensitivity / 10).round();
+
+    if (frameDelta.abs() >= 1) {
+      int newFrame = _currentFrame + frameDelta.sign;
+      if (newFrame < 0) {
+        newFrame = widget.images.length - 1;
+      } else if (newFrame >= widget.images.length) {
+        newFrame = 0;
+      }
+
+      if (newFrame != _currentFrame) {
+        setState(() {
+          _currentFrame = newFrame;
+        });
+        _pageController.animateToPage(
+          _currentFrame,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.easeOut,
+        );
+        _dragStartX = details.globalPosition.dx;
+      }
+    }
+  }
+
+  void _onPanEnd(DragEndDetails details) {
+    _isDragging = false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: widget.onTap,
+      onPanStart: _onPanStart,
+      onPanUpdate: _onPanUpdate,
+      onPanEnd: _onPanEnd,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          children: [
+            PageView.builder(
+              controller: _pageController,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: widget.images.length,
+              onPageChanged: (index) {
+                setState(() => _currentFrame = index);
+              },
+              itemBuilder: (context, index) {
+                return CachedNetworkImage(
+                  imageUrl: widget.images[index],
+                  fit: BoxFit.contain,
+                  placeholder: (context, url) => Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.grey[400],
+                      strokeWidth: 2,
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => Icon(
+                    Icons.image_not_supported,
+                    color: Colors.grey[400],
+                    size: 50,
+                  ),
+                );
+              },
+            ),
+            // Rotation indicator
+            Positioned(
+              bottom: 16,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.6),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '${((_currentFrame / widget.images.length) * 360).round()}°',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Full Screen 360-Degree Viewer
+class _FullScreen360Viewer extends StatefulWidget {
+  final List<String> images;
+
+  const _FullScreen360Viewer({required this.images});
+
+  @override
+  State<_FullScreen360Viewer> createState() => _FullScreen360ViewerState();
+}
+
+class _FullScreen360ViewerState extends State<_FullScreen360Viewer> {
+  late PageController _pageController;
+  double _dragStartX = 0;
+  int _currentFrame = 0;
+  bool _isDragging = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: 0);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _onPanStart(DragStartDetails details) {
+    _dragStartX = details.globalPosition.dx;
+    _isDragging = true;
+  }
+
+  void _onPanUpdate(DragUpdateDetails details) {
+    if (!_isDragging) return;
+
+    final deltaX = details.globalPosition.dx - _dragStartX;
+    final sensitivity = 0.5;
+    final frameDelta = (deltaX * sensitivity / 10).round();
+
+    if (frameDelta.abs() >= 1) {
+      int newFrame = _currentFrame + frameDelta.sign;
+      if (newFrame < 0) {
+        newFrame = widget.images.length - 1;
+      } else if (newFrame >= widget.images.length) {
+        newFrame = 0;
+      }
+
+      if (newFrame != _currentFrame) {
+        setState(() {
+          _currentFrame = newFrame;
+        });
+        _pageController.animateToPage(
+          _currentFrame,
+          duration: const Duration(milliseconds: 100),
+          curve: Curves.easeOut,
+        );
+        _dragStartX = details.globalPosition.dx;
+      }
+    }
+  }
+
+  void _onPanEnd(DragEndDetails details) {
+    _isDragging = false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Top Bar
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: const Icon(
+                      Icons.close,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      '${((_currentFrame / widget.images.length) * 360).round()}° / 360°',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.info_outline,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Drag left or right to rotate the product',
+                          ),
+                          duration: Duration(seconds: 2),
+                          backgroundColor: Colors.white,
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+
+            // 360-Degree Image Viewer
+            Expanded(
+              child: GestureDetector(
+                onPanStart: _onPanStart,
+                onPanUpdate: _onPanUpdate,
+                onPanEnd: _onPanEnd,
+                child: PageView.builder(
+                  controller: _pageController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: widget.images.length,
+                  onPageChanged: (index) {
+                    setState(() => _currentFrame = index);
+                  },
+                  itemBuilder: (context, index) {
+                    return InteractiveViewer(
+                      minScale: 1.0,
+                      maxScale: 3.0,
+                      child: Center(
+                        child: CachedNetworkImage(
+                          imageUrl: widget.images[index],
+                          fit: BoxFit.contain,
+                          placeholder: (context, url) => const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => const Icon(
+                            Icons.image_not_supported,
+                            color: Colors.white,
+                            size: 50,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+
+            // Bottom Instructions
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.swipe,
+                    color: Colors.white.withOpacity(0.7),
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Swipe left or right to rotate',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.7),
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
