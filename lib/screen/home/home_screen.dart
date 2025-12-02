@@ -4,8 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jootabazar/screen/cart/cart_screen.dart';
 import 'package:jootabazar/screen/home/provider/product_riverpood.dart';
 import 'package:jootabazar/screen/product_detail_screen.dart';
+import 'package:jootabazar/widgets/top_menu_header.dart';
 
 import '../../model/product_model.dart';
 
@@ -125,15 +127,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   double _getCategoryTitleFontSize(double width) {
-    if (width >= 1200) return 22;
-    if (width >= 900) return 20;
-    if (width >= 600) return 18;
+    if (width >= 1200) return 18;
+    if (width >= 900) return 16;
+    if (width >= 600) return 14;
     return 16;
   }
 
   double _getCategoryChipFontSize(double width) {
-    if (width >= 900) return 15;
-    if (width >= 600) return 14;
+    if (width >= 900) return 12;
+    if (width >= 600) return 10;
     return 13;
   }
 
@@ -227,72 +229,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: horizontalPadding,
-                    vertical: verticalPadding * 0.8,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.black, Colors.grey[900]!],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(
-                          Icons.shopping_bag_outlined,
-                          color: Colors.white,
-                          size: headerIconSize,
-                        ),
-                      ),
-                      SizedBox(width: width >= 600 ? 12 : 8),
-                      Expanded(
-                        child: Text(
-                          'Joota Bazar',
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(
-                                color: Colors.white,
-                                fontSize: width >= 1200
-                                    ? 28
-                                    : width >= 600
-                                    ? 24
-                                    : 20,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: width >= 600 ? 1.2 : 1.0,
-                              ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(width >= 600 ? 8 : 6),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(
-                          Icons.notifications_outlined,
-                          color: Colors.white,
-                          size: notificationIconSize,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                child: const TopMenuHeader(),
               ),
               SliverPadding(
                 padding: EdgeInsets.symmetric(

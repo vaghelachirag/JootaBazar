@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jootabazar/model/product_model.dart';
-import 'package:jootabazar/screen/home/provider/product_riverpood.dart';
 import 'package:jootabazar/screen/cart/provider/cart_provider.dart';
+import 'package:jootabazar/screen/home/provider/product_riverpood.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final Product product;
@@ -22,6 +22,28 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   String _selectedSize = '8';
   final bool _isInStock = true; // Stock status
   bool _is360View = false; // Toggle for 360-degree view
+  final List<Map<String, String>> _faqs = [
+    {
+      'question': 'What is the return policy for this product?',
+      'answer':
+          'You can initiate a return within 7 days of delivery. Products must be unused, in original packaging, and include all tags for a full refund.',
+    },
+    {
+      'question': 'Does this shoe fit true to size?',
+      'answer':
+          'Yes, the Red Chief sneakers run true to size. If you fall between two sizes, we suggest going with the larger one for a relaxed fit.',
+    },
+    {
+      'question': 'How do I care for the leather upper?',
+      'answer':
+          'Wipe with a dry cloth after every use and apply a neutral leather conditioner once a month. Avoid machine washing or prolonged exposure to water.',
+    },
+    {
+      'question': 'Is Cash on Delivery available?',
+      'answer':
+          'Cash on Delivery is available on most pin codes across India. You can confirm availability on the checkout screen after entering your address.',
+    },
+  ];
 
   // Generate multiple image URLs for the product (using the same image for demo)
   List<String> get _productImages => [
@@ -498,6 +520,11 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       ),
                       SizedBox(height: 15.sp),
 
+                      if (_faqs.isNotEmpty) ...[
+                        _buildFaqSection(),
+                        const SizedBox(height: 24),
+                      ],
+
                       // Similar Products Section
                       if (displaySimilarProducts.isNotEmpty) ...[
                         Text(
@@ -562,10 +589,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 child: ElevatedButton(
                   onPressed: _isInStock
                       ? () {
-                          ref.read(cartProvider.notifier).addToCart(
-                                widget.product,
-                                size: _selectedSize,
-                              );
+                          ref
+                              .read(cartProvider.notifier)
+                              .addToCart(widget.product, size: _selectedSize);
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Added to cart!'),
@@ -698,6 +724,80 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             fontSize: 12.sp,
             fontWeight: FontWeight.bold,
             color: price == 'Free' ? Colors.green[700] : Colors.black87,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFaqSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Frequently Asked Questions',
+          style: TextStyle(
+            fontSize: 12.sp,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 16),
+        ..._faqs.map(
+          (faq) => Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.grey[200]!),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Theme(
+              data: Theme.of(context).copyWith(
+                dividerColor: Colors.transparent,
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+              ),
+              child: ExpansionTile(
+                tilePadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
+                childrenPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
+                title: Text(
+                  faq['question']!,
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+                iconColor: Colors.black,
+                collapsedIconColor: Colors.grey[600],
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      faq['answer']!,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        height: 1.4,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ],

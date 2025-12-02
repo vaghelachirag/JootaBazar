@@ -2,7 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../../model/cart_item_model.dart';
+import '../checkout/checkout_screen.dart';
 import 'provider/cart_provider.dart';
 
 class CartScreen extends ConsumerWidget {
@@ -28,14 +30,14 @@ class CartScreen extends ConsumerWidget {
             children: [
               // Header
               _buildHeader(context, width, cartItems.length),
-              
+
               // Cart Content
               Expanded(
                 child: cartItems.isEmpty
                     ? _buildEmptyCart(context, width)
                     : _buildCartList(context, ref, cartItems, width),
               ),
-              
+
               // Bottom Summary (only show if cart has items)
               if (cartItems.isNotEmpty)
                 _buildBottomSummary(context, ref, totalPrice, width),
@@ -77,7 +79,11 @@ class CartScreen extends ConsumerWidget {
             'Shopping Cart',
             style: TextStyle(
               color: Colors.white,
-              fontSize: width >= 1200 ? 28 : width >= 600 ? 24 : 20,
+              fontSize: width >= 1200
+                  ? 28
+                  : width >= 600
+                  ? 24
+                  : 20,
               fontWeight: FontWeight.bold,
               letterSpacing: 0.5,
             ),
@@ -130,7 +136,11 @@ class CartScreen extends ConsumerWidget {
             Text(
               'Your cart is empty',
               style: TextStyle(
-                fontSize: width >= 1200 ? 28 : width >= 600 ? 24 : 20,
+                fontSize: width >= 1200
+                    ? 28
+                    : width >= 600
+                    ? 24
+                    : 20,
                 fontWeight: FontWeight.bold,
                 color: Colors.grey[700],
               ),
@@ -251,11 +261,9 @@ class CartScreen extends ConsumerWidget {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Checkout functionality coming soon!'),
-                      duration: const Duration(seconds: 2),
-                      backgroundColor: Colors.black,
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const CheckoutScreen(),
                     ),
                   );
                 },
@@ -327,7 +335,7 @@ class _CartItemCard extends StatelessWidget {
               child: Container(
                 width: width >= 600 ? 100 : 80,
                 height: width >= 600 ? 100 : 80,
-                color: Colors.grey[100],
+                color: Colors.white,
                 child: CachedNetworkImage(
                   imageUrl: cartItem.product.imageUrl,
                   fit: BoxFit.contain,
@@ -346,7 +354,6 @@ class _CartItemCard extends StatelessWidget {
               ),
             ),
             SizedBox(width: width >= 600 ? 16 : 12),
-            
             // Product Info
             Expanded(
               child: Column(
@@ -405,7 +412,6 @@ class _CartItemCard extends StatelessWidget {
                 ],
               ),
             ),
-            
             // Quantity Controls and Remove
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -474,4 +480,3 @@ class _CartItemCard extends StatelessWidget {
     );
   }
 }
-
