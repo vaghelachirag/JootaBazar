@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jootabazar/screen/main_navigation.dart';
 
 import '../screen/cart/cart_screen.dart';
 import '../screen/cart/provider/cart_provider.dart';
+import '../screen/wishlist/provider/wishlist_provider.dart';
+import '../screen/wishlist/wishlist_screen.dart';
 
 class TopMenuHeader extends ConsumerWidget {
   const TopMenuHeader({super.key});
@@ -11,6 +14,7 @@ class TopMenuHeader extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final width = MediaQuery.of(context).size.width;
     final cartItemCount = ref.watch(cartItemCountProvider);
+    final wishlistCount = ref.watch(wishlistCountProvider);
     final isMobile = width < 600;
 
     return Container(
@@ -28,7 +32,7 @@ class TopMenuHeader extends ConsumerWidget {
       child: Row(
         children: [
           // Logo Section
-          _buildLogo(context, width),
+          buildResponsiveLogo(context),
 
           // Navigation Menu (hidden on mobile)
           if (!isMobile) ...[
@@ -43,7 +47,14 @@ class TopMenuHeader extends ConsumerWidget {
               icon: const Icon(Icons.menu, color: Colors.grey),
               onPressed: () {
                 // Show bottom sheet or drawer with menu items
-                _showMobileMenu(context, ref, cartItemCount, width);
+                final wishlistCount = ref.read(wishlistCountProvider);
+                _showMobileMenu(
+                  context,
+                  ref,
+                  cartItemCount,
+                  wishlistCount,
+                  width,
+                );
               },
             ),
           ],
@@ -51,51 +62,40 @@ class TopMenuHeader extends ConsumerWidget {
           // Right side utilities
           if (!isMobile) const Spacer(),
           SizedBox(width: width >= 600 ? 16 : 8),
-          _buildUtilityIcons(context, ref, cartItemCount, width),
+          _buildUtilityIcons(context, ref, cartItemCount, wishlistCount, width),
         ],
       ),
     );
   }
 
-  Widget _buildLogo(BuildContext context, double width) {
-    return GestureDetector(
-      onTap: () {
-        // Navigate to home or scroll to top
+  Widget buildResponsiveLogo(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double screenWidth = MediaQuery.of(context).size.width;
+
+        // Responsive size logic
+        double logoSize;
+
+        if (screenWidth < 600) {
+          // Mobile
+          logoSize = 60;
+        } else if (screenWidth < 1100) {
+          // Tablet
+          logoSize = 80;
+        } else {
+          // Web / Desktop
+          logoSize = 120;
+        }
+
+        return GestureDetector(
+          onTap: () {},
+          child: Image.asset(
+            'assets/images/app_logo.png',
+            width: logoSize,
+            height: logoSize,
+          ),
+        );
       },
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // RED text in red
-          Text(
-            'RED',
-            style: TextStyle(
-              fontSize: width >= 1200
-                  ? 28
-                  : width >= 600
-                  ? 24
-                  : 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.red[700],
-              letterSpacing: 1.2,
-            ),
-          ),
-          SizedBox(width: 4),
-          // CHIEF text in blue
-          Text(
-            'CHIEF',
-            style: TextStyle(
-              fontSize: width >= 1200
-                  ? 28
-                  : width >= 600
-                  ? 24
-                  : 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.blue[700],
-              letterSpacing: 1.2,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -124,6 +124,7 @@ class TopMenuHeader extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     int cartItemCount,
+    int wishlistCount,
     double width,
   ) {
     final iconSize = width >= 600 ? 24.0 : 20.0;
@@ -140,10 +141,13 @@ class TopMenuHeader extends ConsumerWidget {
         // Heart icon with badge
         _IconWithBadge(
           icon: Icons.favorite_border,
-          badgeCount: 0,
+          badgeCount: wishlistCount,
           iconSize: iconSize,
           onTap: () {
-            // Navigate to wishlist
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const WishlistScreen()),
+            );
           },
         ),
 
@@ -153,6 +157,10 @@ class TopMenuHeader extends ConsumerWidget {
         GestureDetector(
           onTap: () {
             // Open search
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SearchScreen()),
+            );
           },
           child: Icon(Icons.search, size: iconSize, color: Colors.grey[800]),
         ),
@@ -179,6 +187,7 @@ class TopMenuHeader extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     int cartItemCount,
+    int wishlistCount,
     double width,
   ) {
     showModalBottomSheet(
@@ -214,7 +223,7 @@ class TopMenuHeader extends ConsumerWidget {
               onTap: () => Navigator.pop(context),
             ),
             _MobileMenuItem(
-              title: 'Red Chief Sports',
+              title: 'Sports',
               onTap: () => Navigator.pop(context),
             ),
             _MobileMenuItem(title: 'Sale', onTap: () => Navigator.pop(context)),
@@ -364,8 +373,8 @@ class _IconWithBadge extends StatelessWidget {
               ),
             )
           else
-          // Show badge with 0 for wishlist
-          if (icon == Icons.favorite_border)
+          // Show badge for wishlist (even if 0, but only if it's the favorite icon)
+          if (icon == Icons.favorite_border && badgeCount == 0)
             Positioned(
               right: -8,
               top: -8,

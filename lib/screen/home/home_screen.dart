@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:jootabazar/screen/cart/cart_screen.dart';
 import 'package:jootabazar/screen/home/provider/product_riverpood.dart';
 import 'package:jootabazar/screen/product_detail_screen.dart';
+import 'package:jootabazar/screen/wishlist/provider/wishlist_provider.dart';
 import 'package:jootabazar/widgets/top_menu_header.dart';
 
 import '../../model/product_model.dart';
@@ -851,18 +852,17 @@ class _ProductListTile extends StatelessWidget {
   }
 }
 
-class ProductCard extends StatefulWidget {
+class ProductCard extends ConsumerStatefulWidget {
   final Product product;
   final double width;
   const ProductCard({super.key, required this.product, required this.width});
 
   @override
-  State<ProductCard> createState() => _ProductCardState();
+  ConsumerState<ProductCard> createState() => _ProductCardState();
 }
 
-class _ProductCardState extends State<ProductCard> {
+class _ProductCardState extends ConsumerState<ProductCard> {
   bool _hover = false;
-  bool _isFavorite = false;
 
   @override
   Widget build(BuildContext context) {
@@ -949,10 +949,16 @@ class _ProductCardState extends State<ProductCard> {
                       ),
                       const Spacer(),
                       GestureDetector(
-                        onTap: () => setState(() => _isFavorite = !_isFavorite),
+                        onTap: () {
+                          ref.read(wishlistProvider.notifier).toggleWishlist(widget.product);
+                        },
                         child: Icon(
-                          _isFavorite ? Icons.favorite : Icons.favorite_border,
-                          color: _isFavorite ? Colors.red : Colors.grey[500],
+                          ref.watch(wishlistProvider).any((p) => p.id == widget.product.id)
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: ref.watch(wishlistProvider).any((p) => p.id == widget.product.id)
+                              ? Colors.red
+                              : Colors.grey[500],
                           size: widget.width >= 600 ? 20 : 18,
                         ),
                       ),

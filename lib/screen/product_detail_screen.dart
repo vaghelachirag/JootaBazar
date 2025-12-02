@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:jootabazar/model/product_model.dart';
 import 'package:jootabazar/screen/cart/provider/cart_provider.dart';
 import 'package:jootabazar/screen/home/provider/product_riverpood.dart';
+import 'package:jootabazar/screen/wishlist/provider/wishlist_provider.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final Product product;
@@ -18,7 +19,6 @@ class ProductDetailScreen extends ConsumerStatefulWidget {
 
 class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   int _selectedImageIndex = 0;
-  bool _isFavorite = false;
   String _selectedSize = '8';
   final bool _isInStock = true; // Stock status
   bool _is360View = false; // Toggle for 360-degree view
@@ -131,11 +131,16 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     ),
                     child: IconButton(
                       icon: Icon(
-                        _isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: _isFavorite ? Colors.red : Colors.black,
+                        ref.watch(wishlistProvider).any((p) => p.id == widget.product.id)
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: ref.watch(wishlistProvider).any((p) => p.id == widget.product.id)
+                            ? Colors.red
+                            : Colors.black,
                       ),
-                      onPressed: () =>
-                          setState(() => _isFavorite = !_isFavorite),
+                      onPressed: () {
+                        ref.read(wishlistProvider.notifier).toggleWishlist(widget.product);
+                      },
                     ),
                   ),
                   const SizedBox(width: 8),
