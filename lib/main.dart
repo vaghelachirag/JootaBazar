@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return MaterialApp(debugShowCheckedModeBanner: false, home: child);
       },
-      child: const HomeScreen(), // your first screen
+      child: const HomeScreen(),
     );
   }
 }

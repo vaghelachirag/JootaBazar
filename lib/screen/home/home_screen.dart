@@ -4,13 +4,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:jootabazar/screen/cart/cart_screen.dart';
 import 'package:jootabazar/screen/home/provider/product_riverpood.dart';
 import 'package:jootabazar/screen/product_detail_screen.dart';
 import 'package:jootabazar/screen/wishlist/provider/wishlist_provider.dart';
 import 'package:jootabazar/widgets/top_menu_header.dart';
 
 import '../../model/product_model.dart';
+import '../../uttils/constant.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -229,9 +229,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: SafeArea(
           child: CustomScrollView(
             slivers: [
-              SliverToBoxAdapter(
-                child: const TopMenuHeader(),
-              ),
+              SliverToBoxAdapter(child: const TopMenuHeader()),
               SliverPadding(
                 padding: EdgeInsets.symmetric(
                   horizontal: horizontalPadding,
@@ -445,6 +443,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               width: width,
                               onTap: () =>
                                   setState(() => _selectedCategory = 'Kids'),
+                            ),
+
+                            CategoryTile(
+                              name: Contants().categorySport,
+                              isSelected:
+                                  _selectedCategory == Contants().categorySport,
+                              width: width,
+                              onTap: () => setState(
+                                () => _selectedCategory =
+                                    Contants().categorySport,
+                              ),
+                            ),
+
+                            CategoryTile(
+                              name: Contants().categoryChappal,
+                              isSelected:
+                                  _selectedCategory ==
+                                  Contants().categoryChappal,
+                              width: width,
+                              onTap: () => setState(
+                                () => _selectedCategory =
+                                    Contants().categoryChappal,
+                              ),
                             ),
                           ],
                         ),
@@ -950,13 +971,20 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                       const Spacer(),
                       GestureDetector(
                         onTap: () {
-                          ref.read(wishlistProvider.notifier).toggleWishlist(widget.product);
+                          ref
+                              .read(wishlistProvider.notifier)
+                              .toggleWishlist(widget.product);
                         },
                         child: Icon(
-                          ref.watch(wishlistProvider).any((p) => p.id == widget.product.id)
+                          ref
+                                  .watch(wishlistProvider)
+                                  .any((p) => p.id == widget.product.id)
                               ? Icons.favorite
                               : Icons.favorite_border,
-                          color: ref.watch(wishlistProvider).any((p) => p.id == widget.product.id)
+                          color:
+                              ref
+                                  .watch(wishlistProvider)
+                                  .any((p) => p.id == widget.product.id)
                               ? Colors.red
                               : Colors.grey[500],
                           size: widget.width >= 600 ? 20 : 18,

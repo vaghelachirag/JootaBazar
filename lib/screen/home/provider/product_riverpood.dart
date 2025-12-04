@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../model/product_model.dart';
+import '../../../uttils/constant.dart';
 
 // Dummy data
 final productsProvider = Provider<List<Product>>((ref) {
@@ -9,255 +10,377 @@ final productsProvider = Provider<List<Product>>((ref) {
       id: '1',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/LmPcxt8/Whats-App-Image-2025-11-27-at-9-37-53-PM-2-removebg-preview.png',
+          'https://i.ibb.co/84TKpmP2/IMG-20251203-093843937-HDR-removebg-preview-1.png',
       price: 999,
-      category: 'Men',
+      category: Contants().categoryMen,
     ),
     Product(
       id: '2',
-      name: 'Women Sandals',
+      name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/Y778SHqD/Whats-App-Image-2025-11-28-at-8-53-55-AM-removebg-preview.png',
+          'https://i.ibb.co/LdCPfnmB/IMG-20251203-094315337-HDR-removebg-preview.png',
       price: 699,
-      category: 'Women',
+      category: Contants().categoryMen,
     ),
     Product(
-      id: '3',
-      name: 'Kids Shoes',
-      imageUrl:
-          'https://i.ibb.co/LmPcxt8/Whats-App-Image-2025-11-27-at-9-37-53-PM-2-removebg-preview.png',
-      price: 499,
-      category: 'Kids',
-    ),
-    Product(
-      id: '4',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/tpQcyJWK/Whats-App-Image-2025-11-28-at-8-53-52-AM-removebg-preview-1.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/23QSCrbS/IMG-20251203-094547177-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
     Product(
-      id: '5',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/G3xXjJZw/Whats-App-Image-2025-11-28-at-8-53-54-AM-1-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/pvfhP2Hb/IMG-20251203-094815166-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
     Product(
-      id: '6',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/yFKqF2X5/Whats-App-Image-2025-11-28-at-8-53-58-AM-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/sJDZ7NnS/IMG-20251203-094901290-HDR-removebg-preview-1.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
     Product(
-      id: '7',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/7PW9gDg/Whats-App-Image-2025-11-28-at-8-54-02-AM-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/xtY5BfmN/IMG-20251203-095415885-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
     Product(
-      id: '8',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/CKPmtwX9/Whats-App-Image-2025-11-28-at-8-53-57-AM-1-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/p6kPKn0z/IMG-20251203-095526897-HDR-removebg-preview-2.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
     Product(
-      id: '9',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/JwkhK5jn/Whats-App-Image-2025-11-28-at-8-53-55-AM-1-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/FLdqKZQh/IMG-20251203-100453130-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
     Product(
-      id: '10',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/Cs7L3fFW/Whats-App-Image-2025-11-27-at-9-38-10-PM-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/KcFNTg7y/IMG-20251203-100447601-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
     Product(
-      id: '11',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/V0BSzZkR/Whats-App-Image-2025-11-27-at-9-38-09-PM-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/ZpVmX9vz/IMG-20251203-100433822-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
     Product(
-      id: '12',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/tpQcyJWK/Whats-App-Image-2025-11-28-at-8-53-52-AM-removebg-preview-1.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/Hf8drXVW/IMG-20251203-100243600-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/DdYdcjs/Whats-App-Image-2025-11-28-at-8-54-00-AM-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/wF9dh1fg/IMG-20251203-100236760-HDR-removebg-preview-1.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/Mxv5sRg0/Whats-App-Image-2025-11-28-at-8-53-51-AM-1-removebg-preview-1.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/Vph5V1qB/IMG-20251203-100509906-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
+
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/HpYbvKqy/Whats-App-Image-2025-11-27-at-9-38-12-PM-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/W4nYbVm8/IMG-20251203-100521774-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
+
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/39TFnhnN/Whats-App-Image-2025-11-27-at-9-38-11-PM-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/xS5GKWWd/IMG-20251203-101823873-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
+
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/jPTz8L7p/Whats-App-Image-2025-11-27-at-9-38-09-PM-removebg-preview-1.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/wZHrH7wW/IMG-20251203-101022574-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
+
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/j92ph3Zd/Whats-App-Image-2025-11-27-at-9-38-14-PM-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/bgNynndC/IMG-20251203-100747357-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
+
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/TBXzcj56/Whats-App-Image-2025-11-27-at-9-38-17-PM-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/fGFnz947/IMG-20251203-101848303-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
+
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/FbNGrd6r/Whats-App-Image-2025-11-27-at-9-38-14-PM-1-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/RTKrhDb9/IMG-20251203-101957992-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
+
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/gL7q3TS1/Whats-App-Image-2025-11-27-at-9-38-16-PM-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/B5Jds688/IMG-20251203-102438852-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
+
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/TBX2wc5H/Whats-App-Image-2025-11-27-at-9-38-12-PM-1-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/RpJQcgQK/IMG-20251203-102549671-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
+
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/VWdDDLDS/Whats-App-Image-2025-11-27-at-9-38-14-PM-1-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/d4NyjWvZ/IMG-20251203-105215383-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
+
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/Lm0ffmT/Whats-App-Image-2025-11-28-at-8-53-55-AM-1-removebg-preview-1.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/QvxQQDsN/IMG-20251203-105228892-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
+
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/jk6N1KZz/Whats-App-Image-2025-11-27-at-9-38-08-PM-1-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/ztXBzvj/IMG-20251203-111040010-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
+
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/VWJQ10yM/Whats-App-Image-2025-11-28-at-9-02-47-AM-removebg-preview-1.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/TxcDN37k/IMG-20251203-101512806-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categorySport,
     ),
+
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/8LwCmynn/Whats-App-Image-2025-11-28-at-8-53-50-AM-removebg-preview-1.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/nqdyd7VN/IMG-20251203-101221127-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categorySport,
     ),
+
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/gLZL0bxr/Whats-App-Image-2025-11-27-at-9-38-18-PM-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/Lhb10C84/IMG-20251203-101144913-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categorySport,
     ),
+
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/67DRmMHT/Whats-App-Image-2025-11-27-at-9-37-54-PM-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/hJzH97rg/IMG-20251203-111840216-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryChappal,
     ),
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
       imageUrl:
-          'https://i.ibb.co/YF1mT97L/Whats-App-Image-2025-11-28-at-8-53-56-AM-removebg-preview.png',
-      price: 999,
-      category: 'Men',
+          'https://i.ibb.co/0jCtr3wv/IMG-20251203-112526158-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
-      imageUrl: 'https://i.ibb.co/dsMxqhqr/SM802001-3.jpg',
-      price: 999,
-      category: 'Men',
+      imageUrl:
+          'https://i.ibb.co/hRbWJ6F5/IMG-20251203-112902469-PORTRAIT-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
     ),
     Product(
-      id: '123',
+      id: '2',
       name: 'Men Sneakers',
-      imageUrl: 'https://i.ibb.co/200Xsts0/IMG-6867.jpg',
-      price: 999,
-      category: 'Men',
+      imageUrl:
+          'https://i.ibb.co/VcDfhrVS/IMG-20251203-113036025-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
+    ),
+    Product(
+      id: '2',
+      name: 'Men Sneakers',
+      imageUrl:
+          'https://i.ibb.co/kVc8JXWV/IMG-20251203-113411891-PORTRAIT-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryChappal,
+    ),
+    Product(
+      id: '2',
+      name: 'Men Sneakers',
+      imageUrl:
+          'https://i.ibb.co/1Jb0mBhV/IMG-20251203-113534978-PORTRAIT-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
+    ),
+    Product(
+      id: '2',
+      name: 'Men Sneakers',
+      imageUrl:
+          'https://i.ibb.co/Hp9T8zcn/IMG-20251203-115304497-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
+    ),
+
+    Product(
+      id: '2',
+      name: 'Men Sneakers',
+      imageUrl:
+          'https://i.ibb.co/Q7VsjD1f/IMG-20251203-124735096-PORTRAIT-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
+    ),
+
+    Product(
+      id: '2',
+      name: 'Men Sneakers',
+      imageUrl:
+          'https://i.ibb.co/Q7VsjD1f/IMG-20251203-124735096-PORTRAIT-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
+    ),
+
+    Product(
+      id: '2',
+      name: 'Men Sneakers',
+      imageUrl:
+          'https://i.ibb.co/Q7VsjD1f/IMG-20251203-124735096-PORTRAIT-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
+    ),
+
+    Product(
+      id: '2',
+      name: 'Men Sneakers',
+      imageUrl:
+          'https://i.ibb.co/8Lx6zmfr/IMG-20251203-163912793-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryWomen,
+    ),
+
+    Product(
+      id: '2',
+      name: 'Men Sneakers',
+      imageUrl:
+          'https://i.ibb.co/XrwC0QkC/IMG-20251203-163741319-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryChappal,
+    ),
+
+    Product(
+      id: '2',
+      name: 'Men Sneakers',
+      imageUrl:
+          'https://i.ibb.co/nMvkXLNn/IMG-20251203-125556555-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
+    ),
+    Product(
+      id: '2',
+      name: 'Men Sneakers',
+      imageUrl:
+          'https://i.ibb.co/1JhMPFCq/IMG-20251203-125029062-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
+    ),
+
+    Product(
+      id: '2',
+      name: 'Men Sneakers',
+      imageUrl:
+          'https://i.ibb.co/dsqtKqMJ/IMG-20251203-172431946-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryChappal,
+    ),
+
+    Product(
+      id: '2',
+      name: 'Men Sneakers',
+      imageUrl:
+          'https://i.ibb.co/YFZcqn04/IMG-20251203-165751331-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryMen,
+    ),
+
+    Product(
+      id: '2',
+      name: 'Men Sneakers',
+      imageUrl:
+          'https://i.ibb.co/8nnhHYgK/IMG-20251203-164004201-HDR-removebg-preview.png',
+      price: 699,
+      category: Contants().categoryWomen,
     ),
   ];
 });

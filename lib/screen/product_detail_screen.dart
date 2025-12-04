@@ -47,17 +47,18 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   // Generate multiple image URLs for the product (using the same image for demo)
   List<String> get _productImages => [
-    widget.product.imageUrl,
-    widget.product.imageUrl,
-    widget.product.imageUrl,
+    "https://i.ibb.co/mC0FBsp8/Chat-GPT-Image-Dec-3-2025-11-06-22-PM.png",
+    "https://i.ibb.co/KctYmhXD/IMG-20251203-093850753-HDR-removebg-preview.png",
+    "https://i.ibb.co/FLg1t0Jw/IMG-20251203-093843937-HDR-removebg-preview.png",
+    "https://i.ibb.co/8L7n3nK2/IMG-20251203-093834892-HDR-removebg-preview.png",
   ];
 
   List<String> get _product360Images {
     return [
-      'https://i.ibb.co/vCYScBxX/Whats-App-Image-2025-11-28-at-8-53-50-AM-1-removebg-preview.png',
-      'https://i.ibb.co/mVWYfHmM/Whats-App-Image-2025-11-28-at-8-53-50-AM-2-removebg-preview.png',
-      'https://i.ibb.co/mVWYfHmM/Whats-App-Image-2025-11-28-at-8-53-50-AM-2-removebg-preview.png',
-      'https://i.ibb.co/vCYScBxX/Whats-App-Image-2025-11-28-at-8-53-50-AM-1-removebg-preview.png',
+      'https://i.ibb.co/KctYmhXD/IMG-20251203-093850753-HDR-removebg-preview.png',
+      'https://i.ibb.co/KctYmhXD/IMG-20251203-093850753-HDR-removebg-preview.png',
+      'https://i.ibb.co/KctYmhXD/IMG-20251203-093850753-HDR-removebg-preview.png',
+      'https://i.ibb.co/FLg1t0Jw/IMG-20251203-093843937-HDR-removebg-preview.png',
     ];
   }
 
@@ -131,15 +132,22 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     ),
                     child: IconButton(
                       icon: Icon(
-                        ref.watch(wishlistProvider).any((p) => p.id == widget.product.id)
+                        ref
+                                .watch(wishlistProvider)
+                                .any((p) => p.id == widget.product.id)
                             ? Icons.favorite
                             : Icons.favorite_border,
-                        color: ref.watch(wishlistProvider).any((p) => p.id == widget.product.id)
+                        color:
+                            ref
+                                .watch(wishlistProvider)
+                                .any((p) => p.id == widget.product.id)
                             ? Colors.red
                             : Colors.black,
                       ),
                       onPressed: () {
-                        ref.read(wishlistProvider.notifier).toggleWishlist(widget.product);
+                        ref
+                            .read(wishlistProvider.notifier)
+                            .toggleWishlist(widget.product);
                       },
                     ),
                   ),
