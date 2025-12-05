@@ -27,6 +27,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Timer? _bannerTimer;
   int _currentBanner = 0;
 
+  // Search and filter state
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  String? _filterCategory;
+  String _sortBy = 'Default';
+  RangeValues _priceRange = const RangeValues(0, 5000);
+
   final List<_BannerData> _banners = const [
     _BannerData(imageUrl: 'https://i.ibb.co/Q39V7sSn/banner-1.jpg'),
     _BannerData(imageUrl: 'https://i.ibb.co/VY7MnHNr/banner-2.png'),
@@ -58,19 +65,304 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void dispose() {
     _bannerTimer?.cancel();
     _bannerController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
   List<Product> _filterProducts(List<Product> products) {
-    if (_selectedCategory == 'All') return products;
-    var filtered = products
-        .where((product) => product.category == _selectedCategory)
+    var filtered = products;
+
+    // Apply category filter
+    if (_selectedCategory != 'All') {
+      filtered = filtered
+          .where((product) => product.category == _selectedCategory)
+          .toList();
+    }
+
+    // Apply search query filter
+    if (_searchQuery.isNotEmpty) {
+      filtered = filtered
+          .where(
+            (product) =>
+                product.name.toLowerCase().contains(
+                  _searchQuery.toLowerCase(),
+                ) ||
+                product.category.toLowerCase().contains(
+                  _searchQuery.toLowerCase(),
+                ),
+          )
+          .toList();
+    }
+
+    // Apply filter dialog category filter
+    if (_filterCategory != null && _filterCategory != 'All') {
+      filtered = filtered
+          .where((product) => product.category == _filterCategory)
+          .toList();
+    }
+
+    // Apply price range filter
+    filtered = filtered
+        .where(
+          (product) =>
+              product.price >= _priceRange.start &&
+              product.price <= _priceRange.end,
+        )
         .toList();
 
-    // Optional sub-filter for Men sub categories (UI first, data later)
-    if (_selectedCategory == 'Men' && _selectedMenSubCategory != 'All') {}
+    // Apply sorting
+    if (_sortBy == 'Price: Low to High') {
+      filtered.sort((a, b) => a.price.compareTo(b.price));
+    } else if (_sortBy == 'Price: High to Low') {
+      filtered.sort((a, b) => b.price.compareTo(a.price));
+    } else if (_sortBy == 'Name: A to Z') {
+      filtered.sort((a, b) => a.name.compareTo(b.name));
+    }
 
     return filtered;
+  }
+
+  void _showFilterDialog(BuildContext context, double width) {
+    String? tempFilterCategory = _filterCategory;
+    String tempSortBy = _sortBy;
+    RangeValues tempPriceRange = _priceRange;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: width >= 600 ? 500 : double.infinity,
+                  maxHeight: MediaQuery.of(context).size.height * 0.85,
+                ),
+                padding: EdgeInsets.all(width >= 600 ? 24 : 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Filter Products',
+                          style: TextStyle(
+                            fontSize: width >= 600 ? 24 : 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () => Navigator.pop(context),
+                          color: Colors.grey[600],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Category Filter
+                    Text(
+                      'Category',
+                      style: TextStyle(
+                        fontSize: width >= 600 ? 16 : 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: ['All', 'Men', 'Women', 'Kids'].map((category) {
+                        final isSelected =
+                            tempFilterCategory == category ||
+                            (tempFilterCategory == null && category == 'All');
+                        return FilterChip(
+                          label: Text(category),
+                          selected: isSelected,
+                          onSelected: (selected) {
+                            setDialogState(() {
+                              tempFilterCategory = selected ? category : null;
+                            });
+                          },
+                          selectedColor: Colors.black,
+                          labelStyle: TextStyle(
+                            color: isSelected ? Colors.white : Colors.black87,
+                            fontWeight: isSelected
+                                ? FontWeight.w600
+                                : FontWeight.normal,
+                          ),
+                          checkmarkColor: Colors.white,
+                        );
+                      }).toList(),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Price Range
+                    Text(
+                      'Price Range',
+                      style: TextStyle(
+                        fontSize: width >= 600 ? 16 : 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    RangeSlider(
+                      values: tempPriceRange,
+                      min: 0,
+                      max: 5000,
+                      divisions: 50,
+                      labels: RangeLabels(
+                        '₹${tempPriceRange.start.round()}',
+                        '₹${tempPriceRange.end.round()}',
+                      ),
+                      onChanged: (RangeValues values) {
+                        setDialogState(() {
+                          tempPriceRange = values;
+                        });
+                      },
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '₹${tempPriceRange.start.round()}',
+                          style: TextStyle(
+                            fontSize: width >= 600 ? 14 : 12,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                        Text(
+                          '₹${tempPriceRange.end.round()}',
+                          style: TextStyle(
+                            fontSize: width >= 600 ? 14 : 12,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Sort By
+                    Text(
+                      'Sort By',
+                      style: TextStyle(
+                        fontSize: width >= 600 ? 16 : 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    ...[
+                      'Default',
+                      'Price: Low to High',
+                      'Price: High to Low',
+                      'Name: A to Z',
+                    ].map((sortOption) {
+                      final isSelected = tempSortBy == sortOption;
+                      return RadioListTile<String>(
+                        title: Text(
+                          sortOption,
+                          style: TextStyle(
+                            fontSize: width >= 600 ? 15 : 14,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        value: sortOption,
+                        groupValue: tempSortBy,
+                        onChanged: (value) {
+                          setDialogState(() {
+                            tempSortBy = value!;
+                          });
+                        },
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                      );
+                    }).toList(),
+
+                    const SizedBox(height: 24),
+
+                    // Action Buttons
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () {
+                              setDialogState(() {
+                                tempFilterCategory = null;
+                                tempSortBy = 'Default';
+                                tempPriceRange = const RangeValues(0, 5000);
+                              });
+                            },
+                            style: OutlinedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                vertical: width >= 600 ? 16 : 14,
+                              ),
+                              side: BorderSide(color: Colors.grey[300]!),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              'Reset',
+                              style: TextStyle(
+                                fontSize: width >= 600 ? 15 : 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                _filterCategory = tempFilterCategory;
+                                _sortBy = tempSortBy;
+                                _priceRange = tempPriceRange;
+                              });
+                              Navigator.pop(context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                vertical: width >= 600 ? 16 : 14,
+                              ),
+                              backgroundColor: Colors.black,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              'Apply',
+                              style: TextStyle(
+                                fontSize: width >= 600 ? 15 : 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   int _calculateCrossAxisCount(double width) {
@@ -248,14 +540,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           letterSpacing: 0.5,
                         ),
                       ),
-                      SizedBox(height: width >= 600 ? 8 : 6),
-                      Text(
-                        'Find the perfect pair for you',
-                        style: TextStyle(
-                          fontSize: subtitleFontSize,
-                          color: Colors.grey[600],
-                          fontWeight: FontWeight.w400,
-                        ),
+                      SizedBox(height: width >= 600 ? 12 : 10),
+                      Row(
+                        children: [
+                          Text(
+                            'Handmade with Love, Worn with Trust.',
+                            style: TextStyle(
+                              fontSize: width >= 1200
+                                  ? 16
+                                  : width >= 900
+                                  ? 15
+                                  : width >= 600
+                                  ? 14
+                                  : 13,
+                              color: Colors.grey[700],
+                              fontWeight: FontWeight.w500,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                          SizedBox(width: width >= 600 ? 6 : 4),
+                          Text(
+                            '❤️',
+                            style: TextStyle(fontSize: width >= 600 ? 16 : 14),
+                          ),
+                        ],
                       ),
                       SizedBox(height: sectionSpacing),
                       Container(
@@ -271,7 +579,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ],
                         ),
                         child: TextField(
+                          controller: _searchController,
                           style: TextStyle(fontSize: searchFontSize),
+                          onChanged: (value) {
+                            setState(() {
+                              _searchQuery = value;
+                            });
+                          },
                           decoration: InputDecoration(
                             hintText: 'Search for shoes...',
                             hintStyle: TextStyle(
@@ -283,20 +597,73 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               color: Colors.grey[600],
                               size: width >= 600 ? 24 : 20,
                             ),
-                            suffixIcon: Container(
-                              margin: EdgeInsets.all(width >= 600 ? 8 : 6),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [Colors.black, Colors.grey[800]!],
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Icon(
-                                Icons.tune,
-                                color: Colors.white,
-                                size: width >= 600 ? 20 : 18,
-                              ),
-                            ),
+                            suffixIcon: _searchQuery.isNotEmpty
+                                ? Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(
+                                          Icons.clear,
+                                          color: Colors.grey[600],
+                                          size: width >= 600 ? 20 : 18,
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            _searchQuery = '';
+                                            _searchController.clear();
+                                          });
+                                        },
+                                      ),
+                                      GestureDetector(
+                                        onTap: () =>
+                                            _showFilterDialog(context, width),
+                                        child: Container(
+                                          margin: EdgeInsets.all(
+                                            width >= 600 ? 8 : 6,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [
+                                                Colors.black,
+                                                Colors.grey[800]!,
+                                              ],
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                          ),
+                                          child: Icon(
+                                            Icons.tune,
+                                            color: Colors.white,
+                                            size: width >= 600 ? 20 : 18,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : GestureDetector(
+                                    onTap: () =>
+                                        _showFilterDialog(context, width),
+                                    child: Container(
+                                      margin: EdgeInsets.all(
+                                        width >= 600 ? 8 : 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Colors.black,
+                                            Colors.grey[800]!,
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Icon(
+                                        Icons.tune,
+                                        color: Colors.white,
+                                        size: width >= 600 ? 20 : 18,
+                                      ),
+                                    ),
+                                  ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
                               borderSide: BorderSide.none,

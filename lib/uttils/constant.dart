@@ -3,4 +3,5 @@ class Contants {
   final String categoryWomen = "Women";
   final String categorySport = "Sport";
   final String categoryChappal = "Chappal";
+  final String categoryKids = "Kids";
 }

@@ -47,7 +47,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
   // Generate multiple image URLs for the product (using the same image for demo)
   List<String> get _productImages => [
-    "https://i.ibb.co/mC0FBsp8/Chat-GPT-Image-Dec-3-2025-11-06-22-PM.png",
+    widget.product.imageUrl,
     "https://i.ibb.co/KctYmhXD/IMG-20251203-093850753-HDR-removebg-preview.png",
     "https://i.ibb.co/FLg1t0Jw/IMG-20251203-093843937-HDR-removebg-preview.png",
     "https://i.ibb.co/8L7n3nK2/IMG-20251203-093834892-HDR-removebg-preview.png",
@@ -272,7 +272,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                               duration: const Duration(milliseconds: 300),
                               margin: const EdgeInsets.symmetric(horizontal: 4),
                               height: 8,
-                              width: _selectedImageIndex == index ? 24 : 8,
+                              width: _selectedImageIndex == index ? 0 : 0,
                               decoration: BoxDecoration(
                                 color: _selectedImageIndex == index
                                     ? Colors.black
