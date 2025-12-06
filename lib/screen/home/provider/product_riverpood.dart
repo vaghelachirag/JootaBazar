@@ -9,8 +9,7 @@ final productsProvider = Provider<List<Product>>((ref) {
     Product(
       id: '1',
       name: 'Men Sneakers',
-      imageUrl:
-          'https://i.ibb.co/spGWjWwP/IMG-20251203-093843937-HDR-removebg-preview-1-removebg-preview.png',
+      imageUrl: 'https://i.ibb.co/zHrpjWMF/Gemini-Generated-Image-pie423pie423pie4.png',
       price: 1299,
       category: Contants().categoryMen,
     ),

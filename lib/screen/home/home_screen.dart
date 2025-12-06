@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jootabazar/screen/home/provider/product_riverpood.dart';
 import 'package:jootabazar/screen/product_detail_screen.dart';
 import 'package:jootabazar/screen/wishlist/provider/wishlist_provider.dart';
+import 'package:jootabazar/widgets/app_footer.dart';
 import 'package:jootabazar/widgets/top_menu_header.dart';
 
 import '../../model/product_model.dart';
@@ -35,15 +37,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   RangeValues _priceRange = const RangeValues(0, 5000);
 
   final List<_BannerData> _banners = const [
-    _BannerData(imageUrl: 'https://i.ibb.co/Q39V7sSn/banner-1.jpg'),
-    _BannerData(imageUrl: 'https://i.ibb.co/VY7MnHNr/banner-2.png'),
-    _BannerData(imageUrl: 'https://i.ibb.co/twpW272w/banner-3.jpg'),
+    _BannerData(
+      imageUrl:
+          'https://i.ibb.co/HfSXP89h/Chat-GPT-Image-Dec-5-2025-09-59-35-PM.png',
+    ),
+    _BannerData(
+      imageUrl:
+          'https://i.ibb.co/9m1sJ59p/Chat-GPT-Image-Dec-5-2025-10-09-48-PM.png',
+    ),
+    _BannerData(
+      imageUrl:
+          'https://i.ibb.co/N6gJvpsx/Gemini-Generated-Image-lneysulneysulney.png',
+    ),
+    _BannerData(
+      imageUrl:
+          'https://i.ibb.co/zWN9NBCP/Green-and-Yellow-Simple-Clean-Shoes-Sale-Banner.png',
+    ),
+    _BannerData(
+      imageUrl: 'https://i.ibb.co/KpzNcL4H/shoes-sale-Banner-Landscape.png',
+    ),
   ];
 
   @override
   void initState() {
     super.initState();
-    // Will be updated in build method with responsive value
     _bannerController = PageController(viewportFraction: 0.9);
     _startBannerAutoScroll();
   }
@@ -380,12 +397,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   double _calculateBannerHeight(double width) {
-    if (width >= 1400) return 420;
-    if (width >= 1100) return 360;
-    if (width >= 900) return 320;
-    if (width >= 700) return 280;
-    if (width >= 500) return 240;
-    return 200;
+    // Make banner square - use the available width minus padding
+    final horizontalPadding = _getHorizontalPadding(width);
+    final availableWidth = width - (horizontalPadding * 2);
+    // Return square height (same as available width)
+    return availableWidth;
   }
 
   // Responsive padding calculations
@@ -702,6 +718,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     child: _BannerCard(
                                       data: banner,
                                       isActive: _currentBanner == index,
+                                      width: width,
+                                      horizontalPadding: horizontalPadding,
                                     ),
                                   );
                                 },
@@ -890,6 +908,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ],
                           ),
                         ),
+                      SizedBox(height: 20.sp),
                     ],
                   ),
                 ),
@@ -922,9 +941,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         }, childCount: filteredProducts.length),
                       ),
               ),
-              SliverToBoxAdapter(
-                child: SizedBox(height: width >= 600 ? 100 : 80),
-              ),
+              SliverToBoxAdapter(child: const AppFooter()),
             ],
           ),
         ),
@@ -1454,30 +1471,211 @@ class _BannerData {
   const _BannerData({required this.imageUrl});
 }
 
-class _BannerCard extends StatelessWidget {
+class _BannerCard extends StatefulWidget {
   final _BannerData data;
   final bool isActive;
+  final double width;
+  final double horizontalPadding;
 
-  const _BannerCard({super.key, required this.data, required this.isActive});
+  const _BannerCard({
+    super.key,
+    required this.data,
+    required this.isActive,
+    required this.width,
+    required this.horizontalPadding,
+  });
+
+  @override
+  State<_BannerCard> createState() => _BannerCardState();
+}
+
+class _BannerCardState extends State<_BannerCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+  bool _isHovering = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.03).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+    if (widget.isActive) {
+      _animationController.forward();
+    }
+  }
+
+  @override
+  void didUpdateWidget(_BannerCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive != oldWidget.isActive) {
+      if (widget.isActive) {
+        _animationController.forward();
+      } else {
+        _animationController.reverse();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeOut,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(32),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.12),
-            blurRadius: 20,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(32),
-        child: CachedNetworkImage(imageUrl: data.imageUrl, fit: BoxFit.cover),
+    final maxPadding = 4.0;
+    final availableWidth =
+        widget.width - (widget.horizontalPadding * 2) - (maxPadding * 2);
+    final squareSize = availableWidth;
+    final theme = Theme.of(context);
+    final isSmallScreen = widget.width < 600;
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovering = true),
+      onExit: (_) => setState(() => _isHovering = false),
+      child: AnimatedBuilder(
+        animation: _animationController,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _isHovering ? _scaleAnimation.value : 1.0,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeOut,
+              width: squareSize,
+              height: squareSize,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(_isHovering ? 0.2 : 0.1),
+                    blurRadius: _isHovering ? 30 : 20,
+                    offset: const Offset(0, 8),
+                    spreadRadius: _isHovering ? 2 : 0,
+                  ),
+                ],
+              ),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // Background Image
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.data.imageUrl,
+                      fit: BoxFit.cover,
+                      width: squareSize,
+                      height: squareSize,
+                    ),
+                  ),
+
+                  // Gradient Overlay
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.1),
+                          Colors.black.withOpacity(0.3),
+                          Colors.black.withOpacity(0.7),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Content
+                  Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        // Title
+                        AnimatedOpacity(
+                          duration: const Duration(milliseconds: 500),
+                          opacity: _isHovering ? 1.0 : 0.9,
+                          child: Text(
+                            'New Collection',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: isSmallScreen ? 16 : 18,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+
+                        // Description
+                        AnimatedOpacity(
+                          duration: const Duration(milliseconds: 500),
+                          opacity: _isHovering ? 0.9 : 0.8,
+                          child: Text(
+                            'Discover our latest styles',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.9),
+                              fontSize: isSmallScreen ? 24 : 32,
+                              fontWeight: FontWeight.bold,
+                              height: 1.2,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // CTA Button
+                        AnimatedOpacity(
+                          duration: const Duration(milliseconds: 400),
+                          opacity: _isHovering ? 1.0 : 0.0,
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            transform: Matrix4.translationValues(
+                              0,
+                              _isHovering ? 0 : 20,
+                              0,
+                            ),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                // Handle CTA
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: Colors.black,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: isSmallScreen ? 20 : 30,
+                                  vertical: isSmallScreen ? 12 : 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                elevation: 3,
+                              ),
+                              child: Text(
+                                'Shop Now',
+                                style: TextStyle(
+                                  fontSize: isSmallScreen ? 14 : 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
